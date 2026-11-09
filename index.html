@@ -54,61 +54,54 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 @media(max-width:760px){.cap{bottom:220px}.stamp{display:none}#hint{display:none}#ulya{padding:0 3vw 210px}#ulya span{-webkit-text-stroke:1px rgba(255,45,149,.45)}}
 @media(prefers-reduced-motion:reduce){#ulya span{animation:none}}
 
-/* ===== экран загрузки в стиле PS5 ===== */
-#psload{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#f2f4ff;
- background:radial-gradient(1200px 700px at 50% 10%,#141c3a 0%,#0a0e1d 46%,#04050a 100%);
- transition:opacity .75s ease,visibility .75s ease}
-#psload.off{opacity:0;visibility:hidden;pointer-events:none}
-#psBg{position:absolute;inset:-12%;background-size:cover;background-position:center;
- filter:blur(42px) saturate(1.25) brightness(.42);opacity:.55;transform:scale(1.12);animation:psDrift 24s ease-in-out infinite alternate}
-#psload:before{content:'';position:absolute;inset:0;
- background:radial-gradient(58% 58% at 50% 38%,rgba(96,132,255,.20),transparent 72%),linear-gradient(180deg,rgba(4,5,10,.30),rgba(4,5,10,.94))}
-.pswrap{position:relative;z-index:2;width:min(640px,88vw);text-align:center;display:flex;flex-direction:column;align-items:center}
-.pstile{width:134px;height:134px;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,.22);
- box-shadow:0 24px 60px rgba(0,0,0,.8),0 0 0 6px rgba(255,255,255,.045),0 0 60px rgba(120,150,255,.28);
- animation:psFloat 5.5s ease-in-out infinite}
-.pstile img{width:100%;height:100%;object-fit:cover;display:block}
-.psbrand{margin-top:28px;font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#9fb0ff;font-weight:700}
-.pstitle{margin-top:10px;font-size:clamp(25px,4.6vw,44px);font-weight:800;letter-spacing:-.01em;line-height:1.05;
- text-shadow:0 6px 40px rgba(0,0,0,.8)}
-.pssub{margin-top:14px;font-size:14px;color:#c6d0f2;font-variant-numeric:tabular-nums}
-.pssub b{color:#fff}
-.psbar{margin-top:20px;width:100%;height:9px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;position:relative;
- box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
-.psbar i{display:block;height:100%;width:0;border-radius:99px;position:relative;overflow:hidden;
- background:linear-gradient(90deg,#7898ff,#d5e0ff 46%,#ff5fb0);box-shadow:0 0 22px rgba(140,170,255,.85)}
-.psbar i:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
- transform:translateX(-100%);animation:psShine 1.7s linear infinite}
-.psmeta{margin-top:12px;width:100%;display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:#a7b2d8;font-variant-numeric:tabular-nums}
-.psmeta b{color:#fff;font-weight:700}
-.psfoot{position:absolute;bottom:26px;left:0;right:0;z-index:2;text-align:center;font-size:10.5px;letter-spacing:.18em;
- text-transform:uppercase;color:#7a84ac}
-.psfoot span{display:inline-flex;align-items:center;gap:9px}
-.psdot{width:6px;height:6px;border-radius:50%;background:#7aa2ff;box-shadow:0 0 12px #7aa2ff;animation:psBlink 1.5s ease-in-out infinite}
-@keyframes psDrift{from{transform:scale(1.12) translate3d(-2%,-1%,0)}to{transform:scale(1.22) translate3d(2%,2%,0)}}
-@keyframes psFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+/* ===== карточка загрузки PS5 в правом нижнем углу ===== */
+#pscard{position:fixed;right:22px;bottom:22px;z-index:12;width:344px;display:flex;gap:12px;padding:13px 14px;border-radius:16px;
+ background:linear-gradient(160deg,rgba(26,35,68,.94),rgba(9,13,26,.95));
+ border:1px solid rgba(150,175,255,.22);
+ box-shadow:0 22px 50px rgba(0,0,0,.62),inset 0 0 0 1px rgba(255,255,255,.045),0 0 44px rgba(90,130,255,.18);
+ backdrop-filter:blur(16px) saturate(1.25);-webkit-backdrop-filter:blur(16px) saturate(1.25);
+ color:#eef2ff;pointer-events:none;
+ transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+#pscard.out{opacity:0;transform:translateY(16px) scale(.96)}
+.psc-icon{width:46px;height:46px;flex:0 0 46px;border-radius:11px;overflow:hidden;border:1px solid rgba(255,255,255,.2);
+ box-shadow:0 8px 20px rgba(0,0,0,.6)}
+.psc-icon img{width:100%;height:100%;object-fit:cover;display:block}
+.psc-body{flex:1 1 auto;min-width:0}
+.psc-head{display:flex;align-items:baseline;gap:8px}
+.psc-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psc-pct{margin-left:auto;font-size:12px;font-weight:700;color:#c2d3ff;font-variant-numeric:tabular-nums}
+.psc-bar{margin-top:8px;height:4px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden}
+.psc-bar i{display:block;height:100%;width:0;border-radius:99px;position:relative;overflow:hidden;
+ background:linear-gradient(90deg,#6f93ff,#dfe8ff 55%,#ff5fb0);box-shadow:0 0 12px rgba(130,165,255,.9);transition:width .2s linear}
+.psc-bar i:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+ transform:translateX(-100%);animation:psShine 1.8s linear infinite}
+.psc-meta{margin-top:7px;display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:#9faaCE;font-variant-numeric:tabular-nums}
+.psc-meta b{color:#fff;font-weight:700}
+.psc-state{margin-top:6px;display:flex;align-items:center;gap:7px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:#8b96bd}
+.psc-dot{width:5px;height:5px;border-radius:50%;background:#7aa2ff;box-shadow:0 0 10px #7aa2ff;animation:psBlink 1.5s ease-in-out infinite}
+.psc-state .sp{margin-left:auto;text-transform:none;letter-spacing:.04em;font-size:10.5px;color:#818cb4}
+#pscard.done .psc-dot{background:#39d98a;box-shadow:0 0 10px #39d98a;animation:none}
+#pscard.done .psc-pct{color:#8ff0bd}
 @keyframes psShine{to{transform:translateX(100%)}}
-@keyframes psBlink{0%,100%{opacity:.35}50%{opacity:1}}
-@media(max-width:760px){.pstile{width:104px;height:104px;border-radius:22px}.psbrand{margin-top:22px;letter-spacing:.26em}
- .psmeta{font-size:11.5px;flex-direction:column;align-items:center;gap:4px}.psfoot{bottom:16px;font-size:9.5px;letter-spacing:.12em}}
-@media(prefers-reduced-motion:reduce){#psBg,.pstile,.psdot,.psbar i:after{animation:none}}
+@keyframes psBlink{0%,100%{opacity:.3}50%{opacity:1}}
+#hud{transition:padding-right .6s ease}
+#dots{transition:padding-right .6s ease,opacity .4s ease}
+@media(min-width:1101px){body.psing #hud{padding-right:382px}body.psing #dots{padding-right:382px}}
+@media(max-width:760px){#pscard{width:272px;right:14px;bottom:14px;padding:11px 12px;border-radius:14px}
+ .psc-icon{width:38px;height:38px;flex-basis:38px}.psc-name{font-size:12px}
+ body.psing #hud{padding-bottom:118px}body.psing #dots{opacity:0}}
+@media(prefers-reduced-motion:reduce){.psc-bar i:after,.psc-dot{animation:none}}
 </style></head>
 <body>
-<div id="psload" role="status" aria-live="polite">
-  <div id="psBg"></div>
-  <div class="pswrap">
-    <div class="pstile"><img id="psIcon" alt="Grand Theft Auto VI"></div>
-    <div class="psbrand">PlayStation 5 · загрузка игры</div>
-    <div class="pstitle">Grand Theft Auto VI</div>
-    <div class="pssub" id="psSub">Загрузка… <b id="psPct">0%</b> · <span id="psSpeed">разгон…</span></div>
-    <div class="psbar"><i id="psFill"></i></div>
-    <div class="psmeta">
-      <span id="psGb"><b>0,0</b> ГБ из <b>145,0</b> ГБ</span>
-      <span id="psEta">осталось ~12 мин</span>
-    </div>
+<aside id="pscard" role="status" aria-live="polite">
+  <div class="psc-icon"><img id="psIcon" alt="Grand Theft Auto VI"></div>
+  <div class="psc-body">
+    <div class="psc-head"><span class="psc-name">Grand Theft Auto VI</span><span class="psc-pct" id="psPct">0%</span></div>
+    <div class="psc-bar"><i id="psFill"></i></div>
+    <div class="psc-meta"><span id="psGb"><b>0,0</b> ГБ из <b>145,0</b> ГБ</span><span id="psEta">осталось 2:54</span></div>
+    <div class="psc-state"><i class="psc-dot"></i><span id="psState">Загрузка</span><span class="sp" id="psSpeed">—</span></div>
   </div>
-  <div class="psfoot"><span><i class="psdot"></i>загрузка в фоне · не выключайте консоль · клик — пропустить</span></div>
-</div>
+</aside>
 <div id="stage"></div>
 <div id="top">
   <div class="brand"><span class="dot"></span>Grand Theft Auto VI · 4K</div>
@@ -178,6 +171,11 @@ function tick() {
   t0 = now;
   bar.style.width = Math.min(100, acc / DUR * 100) + '%';
   if (acc >= DUR) { acc = 0; show(i + 1); }
+  // прогресс «загрузки» = сколько слайд-шоу пройдено до последнего кадра
+  if (typeof psTick === 'function') {
+    const total = (SLIDES.length - 1) * DUR;
+    if (total > 0) psTick((i * DUR + acc) / total);
+  }
   raf = requestAnimationFrame(tick);
 }
 tick();
@@ -217,92 +215,61 @@ function upd() {
 upd(); setInterval(upd, 1000);
 </script>
 <script>
-// ===== имитация системной загрузки PS5: шкала заполняется, считаются гигабайты =====
+// ===== карточка загрузки PS5 (правый нижний угол): шкала идёт ровно до последнего слайда =====
 (function () {
   const el = id => document.getElementById(id);
-  const load = el('psload'); if (!load) return;
-  const fill = el('psFill'), pctEl = el('psPct'), sub = el('psSub'), gbEl = el('psGb'), etaEl = el('psEta'), speedEl = el('psSpeed');
+  const card = el('pscard'); if (!card) return;
+  const fill = el('psFill'), pctEl = el('psPct'), gbEl = el('psGb'),
+        etaEl = el('psEta'), stateEl = el('psState'), speedEl = el('psSpeed');
 
-  // картинки берём из самого слайд-шоу: иконка игры + размытый фон
-  try {
-    el('psIcon').src = SLIDES[0].src;
-    el('psBg').style.backgroundImage = 'url("' + SLIDES[(SLIDES.length > 1 ? 1 : 0)].src + '")';
-  } catch (e) { /* без картинок экран всё равно работает */ }
-
-  const TOTAL = 145.0;            // ГБ — «вес» игры
-  const DL_MS = 12000;            // сколько длится загрузка
+  const slides = (typeof SLIDES !== 'undefined' && SLIDES.length) ? SLIDES : [];
+  const dur = (typeof DUR !== 'undefined') ? DUR : 6000;      // мс на один слайд
+  const totalMs = Math.max(dur, (slides.length - 1) * dur);   // время до показа последнего слайда
+  const totalSec = Math.round(totalMs / 1000);
+  const TOTAL = 145.0;                                        // «вес» игры, ГБ
+  const speedMB = Math.round(TOTAL * 1024 / totalSec);        // честная скорость, МБ/с
   const nf = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const two = n => String(n).padStart(2, '0');
 
-  let gb = 0, pct = 0, speed = 0, started = performance.now(), phase = 'dl', finished = false;
+  if (slides.length) { try { el('psIcon').src = slides[0].src; } catch (e) {} }
+  speedEl.textContent = Math.round(speedMB / 10) * 10 + ' МБ/с';
+
+  let pct = 0, finished = false;
+  document.body.classList.add('psing');
+
+  function eta(rest) {
+    if (rest <= 0.5) return 'осталось 0:00';
+    const m = Math.floor(rest / 60), s = Math.ceil(rest % 60);
+    return 'осталось ' + m + ':' + two(s === 60 ? 59 : s);
+  }
 
   function paint() {
     fill.style.width = pct + '%';
-    pctEl.textContent = Math.floor(pct) + '%';
-    gbEl.innerHTML = '<b>' + nf.format(gb) + '</b> ГБ из <b>' + nf.format(TOTAL) + '</b> ГБ';
+    pctEl.textContent = Math.floor(pct + 1e-6) + '%';
+    gbEl.innerHTML = '<b>' + nf.format(TOTAL * pct / 100) + '</b> ГБ из <b>' + nf.format(TOTAL) + '</b> ГБ';
+    etaEl.textContent = eta(totalSec * (1 - pct / 100));
   }
+  paint();
 
-  function etaText() {
-    if (pct >= 100) return 'осталось 0 сек';
-    if (!speed) return 'расчёт…';
-    const restSec = (TOTAL - gb) * 1024 / speed;
-    if (restSec < 60) return 'осталось ~' + Math.max(1, Math.round(restSec)) + ' сек';
-    return 'осталось ~' + Math.round(restSec / 60) + ' мин';
-  }
-
-  // скорость «плавает», как у настоящей загрузки
-  function speedTick() {
+  // вызывается из tick() слайд-шоу: frac = 0…1
+  window.psTick = function (frac) {
     if (finished) return;
-    const base = 92 + Math.sin(Date.now() / 1400) * 38 + Math.random() * 42;
-    speed = Math.max(28, base);
-    speedEl.textContent = nf.format(speed) + ' МБ/с';
-    etaEl.textContent = etaText();
-  }
-  const speedTimer = setInterval(speedTick, 420);
-  speedTick();
-
-  function frame(now) {
-    if (finished || phase !== 'dl') return;
-    const p = Math.min(1, (now - started) / DL_MS);
-    // лёгкие «рывки» шкалы, но только вперёд
-    const wobble = 0.05 * Math.sin(p * 19) * Math.sin(p * 2.7);
-    const target = Math.min(1, p + wobble * (1 - p));
-    pct = Math.max(pct, target * 100);
-    gb = TOTAL * pct / 100;
-    if (p >= 1) { pct = 100; gb = TOTAL; }
+    pct = Math.max(pct, Math.min(1, frac) * 100);
     paint();
-    if (pct >= 100) { install(); return; }
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-
-  function install() {
-    phase = 'inst';
-    clearInterval(speedTimer);
-    pct = 100; gb = TOTAL; paint();
-    sub.innerHTML = 'Установка… <b>100%</b> · распаковка файлов';
-    speedEl.textContent = '—';
-    etaEl.textContent = 'финальный шаг';
-    setTimeout(finish, 1600);
-  }
+    if (pct >= 99.9) finish();
+  };
 
   function finish() {
     if (finished) return;
     finished = true;
-    clearInterval(speedTimer);
-    removeEventListener('keydown', skip);
-    pct = 100; gb = TOTAL; paint();
-    sub.innerHTML = '<b>Готово к запуску</b> · можно играть';
-    etaEl.textContent = '18.11.2026 · 00:00 Окленд';
-    speedEl.textContent = '✔';
-    setTimeout(() => { load.classList.add('off'); }, 900);
-    setTimeout(() => { load.style.display = 'none'; }, 1800);
+    pct = 100; paint();
+    stateEl.textContent = 'Готово к запуску';
+    speedEl.textContent = '100%';
+    card.classList.add('done');
+    document.body.classList.remove('psing');
+    setTimeout(() => card.classList.add('out'), 3400);
+    setTimeout(() => { card.style.display = 'none'; }, 4200);
   }
-
-  // клик/тап/Enter — пропустить загрузку
-  const skip = e => { if (e.type === 'keydown' && !['Enter', 'Escape', ' '].includes(e.key)) return; finish(); };
-  load.addEventListener('click', skip);
-  load.addEventListener('touchstart', skip, { passive: true });
-  addEventListener('keydown', skip);
 })();
 </script>
 </body></html>
