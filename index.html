@@ -99,6 +99,30 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
  .psc-icon{width:38px;height:38px;flex-basis:38px}.psc-name{font-size:12px}
  body.psing #hud{padding-bottom:118px}body.psing #dots{opacity:0}}
 @media(prefers-reduced-motion:reduce){.psc-bar i:after,.psc-dot{animation:none}}
+
+/* ===== мини-плеер + анализатор спектра ===== */
+#mp{position:fixed;top:66px;left:22px;z-index:13;width:330px;padding:10px 12px 9px;border-radius:16px;
+ background:linear-gradient(160deg,rgba(26,20,40,.9),rgba(10,8,20,.94));border:1px solid rgba(255,110,190,.22);
+ box-shadow:0 18px 44px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.04),0 0 40px rgba(255,45,149,.14);
+ backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);color:#f4eefc;
+ transition:opacity .5s ease,transform .5s ease}
+#mp .mp-top{display:flex;align-items:center;gap:10px}
+#mp .mp-cover{width:40px;height:40px;flex:0 0 40px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 16px rgba(0,0,0,.5);background:#241a35}
+#mp .mp-cover img{width:100%;height:100%;object-fit:cover;display:block}
+#mp .mp-meta{min-width:0;flex:1 1 auto}
+#mp .mp-title{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mp .mp-sub{margin-top:2px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#a597c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mp .mp-row{margin-top:9px;display:flex;align-items:center;gap:6px}
+#mp .mpb{width:28px;height:28px;flex:0 0 28px;border-radius:50%;border:1px solid rgba(255,255,255,.18);
+ background:rgba(255,255,255,.06);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+ transition:background .2s ease,transform .15s ease,border-color .2s}
+#mp .mpb:hover{background:rgba(255,45,149,.32);border-color:rgba(255,45,149,.5)}
+#mp .mpb:active{transform:scale(.92)}
+#mp .mp-play{width:32px;height:32px;flex-basis:32px;font-size:13px;background:rgba(255,45,149,.24);border-color:rgba(255,45,149,.45)}
+#mp #mpScope{flex:1 1 auto;height:34px;width:100%;min-width:0;display:block;border-radius:8px;background:rgba(255,255,255,.03)}
+@media(max-width:760px){#mp{width:250px;top:62px;left:12px;padding:8px 10px 7px}#mp #mpScope{height:28px}}
+@media(prefers-reduced-motion:reduce){#mp{transition:none}}
+#ytHost{position:absolute;width:1px;height:1px;left:-9999px;top:-9999px;overflow:hidden}
 </style></head>
 <body>
 <aside id="pscard" role="status" aria-live="polite">
@@ -110,6 +134,23 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
     <div class="psc-state"><i class="psc-dot"></i><span id="psState">Загрузка</span><span class="sp" id="psSpeed">—</span></div>
   </div>
 </aside>
+<section id="mp" aria-label="Мини-плеер">
+  <div class="mp-top">
+    <div class="mp-cover"><img id="mpCover" alt="" loading="lazy"></div>
+    <div class="mp-meta">
+      <div class="mp-title" id="mpTitle">Бесплатные треки NCS</div>
+      <div class="mp-sub" id="mpSub">YouTube · нажмите ▶</div>
+    </div>
+  </div>
+  <div class="mp-row">
+    <button class="mpb" id="mpPrev" title="Предыдущий трек" aria-label="Предыдущий трек">⏮</button>
+    <button class="mpb mp-play" id="mpPlay" title="Играть / пауза" aria-label="Играть или пауза">▶</button>
+    <button class="mpb" id="mpStop" title="Стоп" aria-label="Стоп">■</button>
+    <button class="mpb" id="mpNext" title="Следующий трек" aria-label="Следующий трек">⏭</button>
+    <canvas id="mpScope" height="34" aria-hidden="true"></canvas>
+  </div>
+  <div id="ytHost"></div>
+</section>
 <div id="stage"></div>
 <div id="top">
   <div class="brand"><span class="dot"></span>Grand Theft Auto VI · 4K</div>
@@ -278,6 +319,161 @@ upd(); setInterval(upd, 1000);
     setTimeout(() => card.classList.add('out'), 3400);
     setTimeout(() => { card.style.display = 'none'; }, 4200);
   }
+})();
+</script>
+<script>
+// ===== мини-плеер YouTube + анализатор спектра =====
+(function () {
+  const $ = id => document.getElementById(id);
+  const mp = $('mp'); if (!mp) return;
+  const playBtn = $('mpPlay'), stopBtn = $('mpStop'), nextBtn = $('mpNext'), prevBtn = $('mpPrev');
+  const titleEl = $('mpTitle'), subEl = $('mpSub'), coverEl = $('mpCover');
+  const canvas = $('mpScope'); if (!canvas) return;
+  const g = canvas.getContext ? canvas.getContext('2d') : null;   // без 2d-контекста плеер всё равно работает
+
+  // бесплатные (copyright free) треки NCS с YouTube
+  const TRACKS = [
+    { id: 'yJg-Y5byMMw', t: 'Warriyo — Mortals', a: 'NCS · copyright free' },
+    { id: 'f7ka5CZ0DmQ', t: 'Best of NCS 2016', a: 'NCS · сборник' },
+    { id: 'Ff5V8-k_ozk', t: 'TOP 10 NCS', a: 'NCS · сборник' },
+    { id: '19Iuib716m0', t: 'NCS — новинки', a: 'NCS · copyright free' }
+  ];
+
+  let idx = 0, player = null, ready = false, playing = false, started = false;
+  let fails = 0, ytDead = false;
+
+  function setSub(txt) { subEl.textContent = txt; }
+  function updateMeta() {
+    const tr = TRACKS[idx];
+    titleEl.textContent = tr.t;
+    setSub(tr.a + (playing ? ' · играет' : ' · нажмите ▶'));
+    coverEl.src = 'https://i.ytimg.com/vi/' + tr.id + '/mqdefault.jpg';
+    coverEl.onerror = () => { coverEl.removeAttribute('src'); };
+  }
+
+  // ---------- YouTube IFrame API ----------
+  function onApiReady() {
+    if (!window.YT || !window.YT.Player || player) return;
+    player = new YT.Player('ytHost', {
+      width: '1', height: '1', videoId: TRACKS[idx].id,
+      playerVars: { autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1, playsinline: 1, rel: 0 },
+      events: {
+        onReady: () => { ready = true; updateMeta(); },
+        onStateChange: e => {
+          playing = e.data === 1;
+          playBtn.textContent = playing ? '❚❚' : '▶';
+          setSub(TRACKS[idx].a + (playing ? ' · играет' : ' · пауза'));
+        },
+        onError: () => {
+          fails++;
+          if (fails >= TRACKS.length) {
+            ytDead = true; playing = false; playBtn.textContent = '▶';
+            setSub('YouTube не даёт включить — откройте сайт в новой вкладке');
+          } else {
+            next();
+          }
+        }
+      }
+    });
+  }
+
+  function loadApi() {
+    if (window.YT && window.YT.Player) { onApiReady(); return; }
+    window.onYouTubeIframeAPIReady = onApiReady;
+    const sc = document.createElement('script');
+    sc.src = 'https://www.youtube.com/iframe_api';
+    sc.onerror = () => { ytDead = true; setSub('YouTube недоступен · только визуализация'); };
+    document.head.appendChild(sc);
+    setTimeout(() => {
+      if (!player && !ytDead) { ytDead = true; setSub('YouTube не ответил · только визуализация'); }
+    }, 9000);
+  }
+
+  function play() {
+    if (ytDead || !ready) return;
+    started = true;
+    player.playVideo();
+  }
+  function pause() { if (player && ready) player.pauseVideo(); }
+  function stop() { if (player && ready) player.stopVideo(); playing = false; playBtn.textContent = '▶'; setSub(TRACKS[idx].a + ' · стоп'); }
+  function next() { idx = (idx + 1) % TRACKS.length; if (player && ready && !ytDead) { updateMeta(); player.loadVideoById(TRACKS[idx].id); } }
+  function prev() { idx = (idx - 1 + TRACKS.length) % TRACKS.length; if (player && ready && !ytDead) { updateMeta(); player.loadVideoById(TRACKS[idx].id); } }
+
+  playBtn.onclick = () => { if (ytDead) { setSub('YouTube недоступен · только визуализация'); return; } playing ? pause() : play(); };
+  stopBtn.onclick = stop;
+  nextBtn.onclick = next;
+  prevBtn.onclick = prev;
+
+  // первый клик/тап по странице — включаем музыку (браузеры не дают автоплей)
+  const kickoff = e => {
+    if (started || ytDead || !ready) return;
+    if (mp.contains(e.target)) return;          // клики по самому плееру обрабатываются кнопками
+    started = true; player.playVideo();
+  };
+  document.addEventListener('pointerdown', kickoff, true);
+
+  // ---------- анализатор спектра ----------
+  const BARS = 30;
+  const cur = new Array(BARS).fill(0), peak = new Array(BARS).fill(0);
+  const t0 = performance.now();
+  const SPB = 60 / 124;                       // 124 BPM
+
+  function beat(ph, sharp) { const f = ((ph % 1) + 1) % 1; return Math.pow(1 - f, sharp); }
+
+  function draw(now) {
+    if (!g) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const cw = canvas.clientWidth || 180, ch = canvas.clientHeight || 34;
+    if (canvas.width !== Math.round(cw * dpr) || canvas.height !== Math.round(ch * dpr)) {
+      canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
+    }
+    const W = canvas.width, H = canvas.height;
+    g.clearRect(0, 0, W, H);
+
+    const t = (now - t0) / 1000;
+    const kick = playing ? beat(t / SPB, 4) : 0;
+    const hat = playing ? beat(t / (SPB / 2) + 0.5, 9) : 0;
+    const gap = W / BARS;
+
+    for (let i = 0; i < BARS; i++) {
+      const n = i / (BARS - 1);
+      let v;
+      if (playing) {
+        const low = kick * Math.pow(1 - n, 1.7);
+        const high = hat * Math.pow(n, 1.4);
+        const wob = (0.5 + 0.5 * Math.sin(t * (2.1 + n * 5.3) + i * 1.7)) * 0.34 * (1 - Math.abs(n - 0.5));
+        const line = Math.max(0, Math.sin(t * 0.9 + n * 4.2)) * 0.22 * (1 - n);
+        v = 0.12 + low * 0.9 + high * 0.78 + wob + line;
+      } else {
+        v = 0.035 + 0.045 * (0.5 + 0.5 * Math.sin(t * 1.1 + i * 0.55));
+      }
+      v = Math.max(0.02, Math.min(1, v));
+      cur[i] += (v - cur[i]) * (playing ? 0.45 : 0.08);
+      peak[i] = Math.max(peak[i] * 0.93, cur[i]);
+
+      const bw = Math.max(2, gap * 0.62);
+      const bh = Math.max(1.5, cur[i] * H * 0.92);
+      const x = i * gap + (gap - bw) / 2;
+      const grad = g.createLinearGradient(0, H, 0, H - H * 0.92);
+      grad.addColorStop(0, 'rgba(255,45,149,.95)');
+      grad.addColorStop(0.6, 'rgba(186,92,255,.95)');
+      grad.addColorStop(1, 'rgba(130,170,255,.95)');
+      g.fillStyle = grad;
+      const r = Math.min(bw / 2, 2.5);
+      g.beginPath();
+      if (g.roundRect) g.roundRect(x, H - bh, bw, bh, r);
+      else g.rect(x, H - bh, bw, bh);
+      g.fill();
+
+      g.fillStyle = 'rgba(255,255,255,.7)';
+      g.fillRect(x, Math.max(0, H - peak[i] * H * 0.92 - 2), bw, Math.max(1, dpr));
+    }
+    requestAnimationFrame(draw);
+  }
+
+  updateMeta();
+  requestAnimationFrame(draw);
+  loadApi();
 })();
 </script>
 </body></html>
