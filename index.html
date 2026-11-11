@@ -139,8 +139,8 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 .resizing{opacity:.97}
 /* ===== крысы, танцующие под трек ===== */
 :root{--beat:.5s}
-#rats{position:fixed;left:50%;bottom:150px;z-index:11;display:flex;align-items:flex-end;gap:5px;
- transform:translateX(-50%);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
+#rats{position:fixed;right:24px;top:62px;z-index:11;display:flex;align-items:flex-end;gap:5px;
+ cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
  filter:drop-shadow(0 0 12px rgba(255,45,149,.4)) drop-shadow(0 0 30px rgba(123,92,255,.28))}
 #rats svg{width:56px;height:36px;display:block;color:#f4eeff;fill:currentColor;
  transform-origin:50% 100%;animation:ratDance var(--beat) ease-in-out infinite}
@@ -161,7 +161,7 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 }
 body.music-off #rats svg,body.music-off #rats svg .tail{animation-play-state:paused}
 #rats.dragging{cursor:grabbing;opacity:.96}
-@media(max-width:760px){#rats{bottom:196px;gap:3px}#rats svg{width:40px;height:26px}}
+@media(max-width:760px){#rats{top:118px;right:10px;gap:3px}#rats svg{width:36px;height:24px}}
 @media(prefers-reduced-motion:reduce){#rats svg,#rats svg .tail{animation:none}}
 @media(pointer:coarse){.rz{width:26px;height:26px;opacity:.45}}
 /* перетаскиваемые элементы */
@@ -592,7 +592,7 @@ upd(); setInterval(upd, 1000);
     { id: 'nav', base: '' },
     { id: 'dots', base: '' },
     { id: 'top', base: '' },
-    { id: 'rats', base: 'translateX(-50%) ' },
+    { id: 'rats', base: '' },
     { id: 'hint', base: 'translateX(-50%) ' }
   ];
   let z = 20;
