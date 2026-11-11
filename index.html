@@ -101,11 +101,11 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 @media(prefers-reduced-motion:reduce){.psc-bar i:after,.psc-dot{animation:none}}
 
 /* ===== спектр-полоса во всю ширину сверху ===== */
-#scopeWrap{position:fixed;top:0;left:0;right:0;height:46px;z-index:4;pointer-events:none;overflow:hidden;
- background:linear-gradient(180deg,rgba(8,6,12,.55),rgba(8,6,12,0));
+#scopeWrap{position:fixed;top:0;left:0;right:0;height:52px;z-index:4;pointer-events:none;overflow:hidden;
+ background:linear-gradient(180deg,rgba(6,5,10,.72),rgba(6,5,10,.2) 62%,rgba(6,5,10,0));
  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,1),rgba(0,0,0,.15));
- mask-image:linear-gradient(180deg,rgba(0,0,0,1),rgba(0,0,0,.15))}
-#scope{display:block;width:100%;height:100%;opacity:.62}
+ mask-image:linear-gradient(180deg,rgba(0,0,0,1),rgba(0,0,0,.6) 72%,rgba(0,0,0,.12))}
+#scope{display:block;width:100%;height:100%;opacity:.92}
 /* ===== мини-плеер ===== */
 #mp{position:fixed;top:62px;left:22px;z-index:13;width:264px;padding:9px 12px 8px;border-radius:14px;
  background:linear-gradient(160deg,rgba(18,14,27,.72),rgba(8,7,14,.8));
@@ -126,9 +126,20 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 #mp .mpb:hover{opacity:1;color:#ff2d95;filter:drop-shadow(0 0 7px rgba(255,45,149,.55))}
 #mp .mpb:active{transform:scale(.9)}
 #mp .mp-time{margin-left:auto;font-size:10px;color:#8d83a8;font-variant-numeric:tabular-nums;letter-spacing:.04em}
-#mpAudio{display:none}
+#ytHost{position:absolute;right:2px;bottom:2px;width:1px;height:1px;overflow:hidden;opacity:.01;pointer-events:none;border:0}
+/* уголок для изменения размера элемента */
+.rz{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;cursor:nwse-resize;opacity:0;
+ border-right:1px solid rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.6);
+ border-radius:0 0 4px 0;transition:opacity .18s ease,border-color .18s ease;
+ background:linear-gradient(135deg,transparent 44%,rgba(255,255,255,.26) 45%,transparent 52%,transparent 60%,rgba(255,255,255,.26) 61%,transparent 68%)}
+#mp:hover .rz,#mp.dragging .rz,#mp.resizing .rz,#pscard:hover .rz,#pscard.dragging .rz,#pscard.resizing .rz,
+#hud:hover .rz,#hud.dragging .rz,#nav:hover .rz,#nav.dragging .rz,#dots:hover .rz,#top:hover .rz,
+#hint:hover .rz,#ulya span:hover .rz{opacity:.7}
+.rz:hover{opacity:1 !important;border-color:#fff;filter:drop-shadow(0 0 4px rgba(255,255,255,.7))}
+.resizing{opacity:.97}
+@media(pointer:coarse){.rz{width:26px;height:26px;opacity:.45}}
 /* перетаскиваемые элементы */
-#hud,#nav,#dots,#top,#hint,#ulya span,#ulya .ulya-kicker{cursor:grab;user-select:none;-webkit-user-select:none}
+#hud,#nav,#dots,#top,#hint,#pscard,#ulya span,#ulya .ulya-kicker{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
 #ulya span,#ulya .ulya-kicker{pointer-events:auto;touch-action:none}
 .dragging{opacity:.96}
 #hud.dragging,.dragging{cursor:grabbing}
@@ -147,8 +158,8 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
 </aside>
 <div id="scopeWrap"><canvas id="scope" aria-hidden="true"></canvas></div>
 <section id="mp" aria-label="Мини-плеер">
-  <div class="mp-title" id="mpTitle">Vice House</div>
-  <div class="mp-sub" id="mpSub">house · 124 BPM</div>
+  <div class="mp-title" id="mpTitle">Warriyo — Mortals</div>
+  <div class="mp-sub" id="mpSub">NCS · future trap · без авторских прав</div>
   <div class="mp-controls">
     <div class="mp-btns">
       <button class="mpb" id="mpPrev" title="Предыдущий трек" aria-label="Предыдущий трек"><svg viewBox="0 0 16 16"><path d="M4 3h1.6v10H4zM13.5 3v10L6.2 8z"/></svg></button>
@@ -156,16 +167,16 @@ html,body{height:100%;background:#08060c;color:#fff;font-family:-apple-system,Bl
       <button class="mpb" id="mpStop" title="Стоп" aria-label="Стоп"><svg viewBox="0 0 16 16"><path d="M4.4 4.4h7.2v7.2H4.4z"/></svg></button>
       <button class="mpb" id="mpNext" title="Следующий трек" aria-label="Следующий трек"><svg viewBox="0 0 16 16"><path d="M12 3h-1.6v10H12zM2.5 3v10L9.8 8z"/></svg></button>
     </div>
-    <span class="mp-time" id="mpTime">0:00</span>
+    <span class="mp-time" id="mpTime">0:00 / 0:00</span>
   </div>
-  <audio id="mpAudio" preload="metadata"></audio>
+  <div id="ytHost" aria-hidden="true"></div>
 </section>
 <div id="stage"></div>
 <div id="top">
   <div class="brand"><span class="dot"></span>Grand Theft Auto VI · 4K</div>
   <div id="clock">МСК <b id="msk">--:--:--</b> · Окленд <b id="nz">--:--</b></div>
 </div>
-<div id="hint">Стрелки / пробел — управление · элементы можно перетаскивать · двойной клик — сброс</div>
+<div id="hint">Стрелки / пробел — слайды · тяните элементы · уголок ↘ или Shift+тяга — размер · двойной клик — сброс</div>
 <div id="ulya" aria-label="Слышь, Юля, купи ГТА 6"><b class="ulya-kicker">СЛЫШЬ</b><span>ЮЛЯ КУПИ ГТА 6</span></div>
 <div id="dots"></div>
 <div id="nav">
@@ -333,178 +344,332 @@ upd(); setInterval(upd, 1000);
 </script>
 <script>
 // ===== мини-плеер: 10 своих треков + настоящий анализатор спектра =====
+/* ===== мини-плеер: бесплатные треки (NCS, без авторских прав) прямо с YouTube ===== */
 (function () {
   const $ = id => document.getElementById(id);
   const mp = $('mp'); if (!mp) return;
-  const audio = $('mpAudio'), titleEl = $('mpTitle'), subEl = $('mpSub'), timeEl = $('mpTime');
+  const titleEl = $('mpTitle'), subEl = $('mpSub'), timeEl = $('mpTime');
   const playBtn = $('mpPlay'), playIcon = $('mpPlayIcon');
   const prevBtn = $('mpPrev'), nextBtn = $('mpNext'), stopBtn = $('mpStop');
   const canvas = $('scope');
-  const g = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+  let g = null;
+  try { g = canvas && canvas.getContext ? canvas.getContext('2d') : null; } catch (e) { g = null; }
+  const host = $('ytHost');
 
+  // все треки — NoCopyrightSounds (CC / copyright free), играют прямо из YouTube
   const TRACKS = [
-    { f: 'music/track01.mp3', t: 'Vice House',     a: 'house · 124 BPM' },
-    { f: 'music/track02.mp3', t: 'Neon Drive',     a: 'synthwave · 100 BPM' },
-    { f: 'music/track03.mp3', t: 'Phonk Alley',    a: 'phonk · 140 BPM' },
-    { f: 'music/track04.mp3', t: 'Leonida Lofi',   a: 'lo-fi · 78 BPM' },
-    { f: 'music/track05.mp3', t: 'Trap Dollar',    a: 'trap · 140 BPM' },
-    { f: 'music/track06.mp3', t: 'Vice DnB',       a: 'drum & bass · 174 BPM' },
-    { f: 'music/track07.mp3', t: 'Ocean Drive',    a: 'tropical · 105 BPM' },
-    { f: 'music/track08.mp3', t: 'Electro Neon',   a: 'electro · 128 BPM' },
-    { f: 'music/track09.mp3', t: 'Drill Season',   a: 'drill · 142 BPM' },
-    { f: 'music/track10.mp3', t: 'Leonida Sunrise', a: 'cinematic · 90 BPM' }
+    { y: 'yJg-Y5byMMw', t: 'Warriyo — Mortals',                 a: 'NCS · future trap · без авторских прав',  bpm: 140 },
+    { y: 'Cm4rE4OXuow', t: 'Sevag H — Roxbury',                 a: 'NCS · deep house · без авторских прав',    bpm: 124 },
+    { y: 'I4zyeMxYvOg', t: 'NIVIRO — Paranormal',               a: 'NCS · drum & bass · без авторских прав',   bpm: 174 },
+    { y: 'IN31t-6soMM', t: 'SAM WAITIN — Aftermath',            a: 'NCS · house · без авторских прав',         bpm: 126 },
+    { y: 'AMRG0cKBK8c', t: 'Laeko — Dont Wanna Know',           a: 'NCS · bass house · без авторских прав',    bpm: 128 },
+    { y: 'jT5M53cfnXQ', t: 'Egzod, Lost Sky — Fight In Me',     a: 'NCS · melodic dubstep · без авторских прав', bpm: 150 },
+    { y: 'Gp4avFiYUWc', t: 'tonytonychopper999 — Feel The Rush', a: 'NCS · complextro · без авторских прав',   bpm: 128 },
+    { y: 'y9IQhdpx4zM', t: 'HESTER — I Need An Angel',          a: 'NCS · trance · без авторских прав',        bpm: 138 },
+    { y: '2HcLR3PKBk0', t: 'jonty — Fired Up',                  a: 'NCS · deep house · без авторских прав',    bpm: 124 },
+    { y: 'HgKjrZWvDHo', t: 'Netrum, Halvorsen — Glowing',       a: 'NCS · indie dance · без авторских прав',   bpm: 118 }
   ];
 
   const PLAY_PATH = 'M4.5 3l8.2 5-8.2 5z';
   const PAUSE_PATH = 'M4.5 3h2.6v10H4.5zM8.9 3h2.6v10H8.9z';
 
-  let i = 0, playing = false, actx = null, analyser = null, freq = null;
+  let i = 0, yt = null, ready = false, playing = false, wantPlay = false, fails = 0;
+  let bpm = TRACKS[0].bpm;
 
   const fmt = s => {
     if (!isFinite(s) || s < 0) return '0:00';
     const m = Math.floor(s / 60), r = Math.floor(s % 60);
     return m + ':' + String(r).padStart(2, '0');
   };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const setIcon = on => { if (playIcon) playIcon.innerHTML = '<path d="' + (on ? PAUSE_PATH : PLAY_PATH) + '"/>'; };
+  const sub = s => { subEl.textContent = s; };
 
-  function setIcon(on) { if (playIcon) playIcon.innerHTML = '<path d="' + (on ? PAUSE_PATH : PLAY_PATH) + '"/>'; }
-
-  function ensureGraph() {
-    if (actx || !audio) return;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    try {
-      actx = new AC();
-      const src = actx.createMediaElementSource(audio);
-      analyser = actx.createAnalyser();
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.72;
-      analyser.minDecibels = -85;
-      src.connect(analyser);
-      analyser.connect(actx.destination);
-      freq = new Uint8Array(analyser.frequencyBinCount);
-    } catch (e) { actx = null; analyser = null; }
-  }
-
-  function select(k) {
-    i = (k + TRACKS.length) % TRACKS.length;
-    titleEl.textContent = TRACKS[i].t;
-    subEl.textContent = TRACKS[i].a;
-    audio.src = TRACKS[i].f;
-    timeEl.textContent = '0:00';
-  }
-  function play() {
-    ensureGraph();
-    if (actx && actx.state === 'suspended') actx.resume();
-    const p = audio.play();
-    if (p && p.catch) p.catch(() => {
-      playing = false; setIcon(false);
-      subEl.textContent = TRACKS[i].a + ' · нажмите ▶ ещё раз';
+  function make() {
+    if (yt || !window.YT || !window.YT.Player || !host) return;
+    yt = new window.YT.Player(host, {
+      width: '1', height: '1', videoId: TRACKS[i].y,
+      playerVars: { controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1, origin: location.origin },
+      events: {
+        onReady: function () {
+          ready = true;
+          if (wantPlay) {
+            wantPlay = false;
+            try { yt.playVideo(); } catch (e) {}
+            setTimeout(function () { if (!playing) sub(TRACKS[i].a + ' · нажмите ▶ ещё раз'); }, 1800);
+          }
+        },
+        onStateChange: function (e) {
+          const st = e.data;
+          if (st === 1) { playing = true; fails = 0; setIcon(true); sub(TRACKS[i].a + ' · играет'); }
+          else if (st === 2) { playing = false; setIcon(false); sub(TRACKS[i].a + ' · пауза'); }
+          else if (st === 3) { sub(TRACKS[i].a + ' · загрузка…'); }
+          else if (st === 0) { next(); }
+        },
+        onError: function () {
+          fails++;
+          if (fails >= TRACKS.length) {
+            playing = false; setIcon(false);
+            sub('YouTube не отдаёт видео — проверьте сеть');
+            return;
+          }
+          sub('видео недоступно · включаю следующий');
+          setTimeout(function () { next(); }, 800);
+        }
+      }
     });
   }
-  function toggle() { if (playing) audio.pause(); else play(); }
-  function stop() { audio.pause(); try { audio.currentTime = 0; } catch (e) {} timeEl.textContent = '0:00'; }
-  function next() { const was = playing; select(i + 1); if (was) play(); }
-  function prev() { const was = playing; select(i - 1); if (was) play(); }
+
+  function select(k, autoplay) {
+    i = (k + TRACKS.length) % TRACKS.length;
+    bpm = TRACKS[i].bpm || 120;
+    titleEl.textContent = TRACKS[i].t;
+    sub(TRACKS[i].a);
+    timeEl.textContent = '0:00 / 0:00';
+    if (!yt) return;
+    try {
+      if (!ready) { yt.loadVideoById(TRACKS[i].y); if (!autoplay) setTimeout(function () { try { yt.pauseVideo(); } catch (e) {} }, 400); }
+      else if (autoplay) yt.loadVideoById(TRACKS[i].y);
+      else yt.cueVideoById(TRACKS[i].y);
+    } catch (e) {}
+  }
+
+  function play() {
+    if (!yt) {
+      wantPlay = true;
+      sub('включаю плеер YouTube…');
+      if (window.YT && window.YT.Player) { make(); return; }
+      window.onYouTubeIframeAPIReady = make;
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      s.async = true;
+      document.head.appendChild(s);
+      return;
+    }
+    if (!ready) { wantPlay = true; sub('плеер грузится · нажмите ▶'); return; }
+    try { yt.playVideo(); } catch (e) {}
+  }
+  function toggle() { if (playing) { try { yt.pauseVideo(); } catch (e) {} } else play(); }
+  function stop() {
+    try { yt.stopVideo(); } catch (e) {}
+    playing = false; setIcon(false);
+    timeEl.textContent = '0:00 / 0:00';
+    sub(TRACKS[i].a);
+  }
+  function next() { const was = playing; select(i + 1, was); if (was) { try { yt.playVideo(); } catch (e) {} } }
+  function prev() { const was = playing; select(i - 1, was); if (was) { try { yt.playVideo(); } catch (e) {} } }
 
   playBtn.onclick = toggle;
   stopBtn.onclick = stop;
   nextBtn.onclick = next;
   prevBtn.onclick = prev;
 
-  audio.addEventListener('play', () => { playing = true; setIcon(true); subEl.textContent = TRACKS[i].a + ' · играет'; });
-  audio.addEventListener('pause', () => { playing = false; setIcon(false); subEl.textContent = TRACKS[i].a + ' · пауза'; });
-  audio.addEventListener('ended', next);
-  audio.addEventListener('timeupdate', () => { timeEl.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration); });
-  audio.addEventListener('loadedmetadata', () => { timeEl.textContent = '0:00 / ' + fmt(audio.duration); });
-  audio.addEventListener('error', () => { subEl.textContent = 'нет файла ' + TRACKS[i].f; });
+  if (host) host.addEventListener('click', toggle);
 
-  select(0);
+  setInterval(function () {
+    if (!yt || !ready) return;
+    try {
+      const c = yt.getCurrentTime() || 0;
+      let d = yt.getDuration() || 0;
+      if (!d) d = 0;
+      timeEl.textContent = fmt(c) + ' / ' + (d ? fmt(d) : '0:00');
+    } catch (e) {}
+  }, 500);
 
-  // ---------- спектр во всю ширину сверху ----------
-  let smooth = [];
-  function draw() {
-    if (!g) return;
+  select(0, false);
+
+  // ---------- белый анализатор во всю ширину сверху ----------
+  // у чужого iframe звук снять нельзя, поэтому полоса живёт по ритму трека (BPM),
+  // но выглядит и дышит как настоящий спектр: низ — бочка, середина — аккорды, верх — хэты
+  const barsV = [], varAmp = [];
+  function ensureBars(n) {
+    if (barsV.length === n) return;
+    barsV.length = 0; varAmp.length = 0;
+    for (let b = 0; b < n; b++) {
+      barsV.push(0);
+      varAmp.push(0.5 + 0.5 * Math.abs(Math.sin(b * 1.71) * Math.sin(b * 0.373 + 1.2)));
+    }
+  }
+
+  function draw(ts) {
+    if (!g) { requestAnimationFrame(draw); return; }
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = canvas.clientWidth || window.innerWidth, H = canvas.clientHeight || 46;
     if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) {
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
     }
     const cw = canvas.width, ch = canvas.height;
     g.clearRect(0, 0, cw, ch);
 
-    const bars = Math.max(36, Math.min(120, Math.round(W / 13)));
-    if (smooth.length !== bars) smooth = new Array(bars).fill(0);
-    if (analyser && playing) analyser.getByteFrequencyData(freq);
+    const bars = Math.max(36, Math.min(128, Math.round(W / 12)));
+    ensureBars(bars);
 
-    const gap = cw / bars, bw = Math.max(1.5, gap * 0.52);
+    const t = ((ts || (window.performance && performance.now()) || Date.now()) / 1000);
+    const beat = t * bpm / 60;
+    const kick = Math.pow(1 - (beat % 1), 5);
+    const hat = Math.pow(1 - ((beat * 4) % 1), 6);
+    const swing = 0.5 + 0.5 * Math.sin(t * 0.7);
+
     for (let b = 0; b < bars; b++) {
+      const p = b / bars;
       let target = 0;
-      if (analyser && playing) {
-        const lo = Math.floor(Math.pow(b / bars, 1.85) * freq.length * 0.9);
-        const hi = Math.max(lo + 1, Math.floor(Math.pow((b + 1) / bars, 1.85) * freq.length * 0.9));
-        let m = 0;
-        for (let k = lo; k < hi; k++) if (freq[k] > m) m = freq[k];
-        target = Math.pow(m / 255, 1.25);
+      if (playing) {
+        const low = Math.exp(-p * 4.6);
+        const mid = Math.exp(-Math.pow((p - 0.34) / 0.24, 2));
+        const hi = Math.pow(p, 2.1);
+        const wave = 0.5 + 0.5 * Math.sin(t * 1.9 + b * 0.27);
+        target = 0.66 * low * (0.34 + 0.92 * kick)
+               + 0.50 * mid * (0.5 + 0.5 * wave)
+               + 0.52 * hi * (0.16 + 0.95 * hat)
+               + 0.10 * swing;
+        target *= 0.55 + 0.45 * varAmp[b];
+        target = clamp(target, 0, 1);
+      } else {
+        target = 0.05 * varAmp[b] + 0.012 * (0.5 + 0.5 * Math.sin(t * 0.9 + b * 0.4));
       }
-      smooth[b] += (target - smooth[b]) * (target > smooth[b] ? 0.55 : 0.16);
-      const bh = Math.max(1, smooth[b] * ch * 0.95);
-      const grad = g.createLinearGradient(0, ch, 0, 0);
-      grad.addColorStop(0, 'rgba(255,45,149,.95)');
-      grad.addColorStop(0.55, 'rgba(186,92,255,.9)');
-      grad.addColorStop(1, 'rgba(130,170,255,.85)');
-      g.fillStyle = grad;
+      barsV[b] += (target - barsV[b]) * (target > barsV[b] ? 0.52 : 0.14);
+    }
+
+    const gap = cw / bars, bw = Math.max(1.4, gap * 0.56);
+    const grad = g.createLinearGradient(0, ch, 0, 0);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.55, 'rgba(255,255,255,.86)');
+    grad.addColorStop(1, 'rgba(255,255,255,.42)');
+    g.fillStyle = grad;
+    for (let b = 0; b < bars; b++) {
+      const v = barsV[b];
+      if (v <= 0.001) continue;
+      const bh = Math.max(1, Math.pow(v, 1.08) * ch * 0.96);
+      g.globalAlpha = Math.min(1, 0.45 + v * 0.9);
       g.fillRect(b * gap + (gap - bw) / 2, ch - bh, bw, bh);
     }
+    g.globalAlpha = 1;
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 })();
 
-// ===== перетаскивание элементов мышью/пальцем =====
+/* ===== перетаскивание элементов + изменение размера ===== */
 (function () {
   const KEY = 'gta6.pos.';
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const store = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   const items = [
-    ['ulya', ''], ['mp', ''], ['hud', ''], ['nav', ''], ['dots', ''], ['top', ''],
-    ['hint', 'translateX(-50%) ']
+    { id: 'ulya', base: '', gripIn: 'span' },
+    { id: 'mp', base: '' },
+    { id: 'pscard', base: '' },
+    { id: 'hud', base: '' },
+    { id: 'nav', base: '' },
+    { id: 'dots', base: '' },
+    { id: 'top', base: '' },
+    { id: 'hint', base: 'translateX(-50%) ' }
   ];
   let z = 20;
 
-  items.forEach(([id, base]) => {
-    const el = document.getElementById(id);
+  items.forEach(function (cfg) {
+    const el = document.getElementById(cfg.id);
     if (!el) return;
-    let dx = 0, dy = 0;
-    try { const p = JSON.parse(localStorage.getItem(KEY + id) || 'null'); if (p) { dx = +p.x || 0; dy = +p.y || 0; } } catch (e) {}
-    const apply = () => { el.style.transform = base + 'translate(' + dx + 'px,' + dy + 'px)'; };
+    const base = cfg.base || '';
+    let dx = 0, dy = 0, sc = 1;
+
+    try {
+      const p = JSON.parse(localStorage.getItem(KEY + cfg.id) || 'null');
+      if (p) { dx = +p.x || 0; dy = +p.y || 0; sc = Math.min(2.6, Math.max(0.4, +p.s || 1)); }
+    } catch (e) {}
+
+    const apply = function () {
+      el.style.transform = base + 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) scale(' + sc.toFixed(3) + ')';
+    };
+    el.style.transformOrigin = '50% 50%';
+    el.style.willChange = 'transform';
     apply();
 
-    let start = null;
-    el.addEventListener('pointerdown', e => {
-      if (e.button && e.button !== 0) return;
-      if (e.target.closest('button, a, input, audio')) return;
-      start = { x: e.clientX - dx, y: e.clientY - dy };
+    // уголок-ручка для размера
+    const gripHost = (cfg.gripIn && el.querySelector(cfg.gripIn)) || el;
+    if (window.getComputedStyle && getComputedStyle(gripHost).position === 'static') gripHost.style.position = 'relative';
+    const grip = document.createElement('i');
+    grip.className = 'rz';
+    grip.setAttribute('aria-hidden', 'true');
+    grip.title = 'Потяните — размер · двойной клик — сброс';
+    gripHost.appendChild(grip);
+
+    let drag = null, resize = null, pinch = null;
+    const pts = new Map();
+
+    function startDrag(e) {
+      drag = { x: e.clientX - dx, y: e.clientY - dy };
       el.classList.add('dragging');
       el.style.zIndex = ++z;
-      if (el.setPointerCapture) { try { el.setPointerCapture(e.pointerId); } catch (err) {} }
+    }
+    function startResize(e) {
+      resize = { cx: e.clientX, cy: e.clientY, s0: sc, w: Math.max(170, el.offsetWidth || 240) };
+      el.classList.add('resizing');
+      el.style.zIndex = ++z;
+    }
+    function pinchStart() {
+      const v = Array.from(pts.values());
+      const d = Math.hypot(v[0].x - v[1].x, v[0].y - v[1].y) || 1;
+      pinch = { d: d, s0: sc };
+      drag = null; resize = null;
+    }
+
+    el.addEventListener('pointerdown', function (e) {
+      if (e.button && e.button !== 0) return;
+      const onGrip = e.target && e.target.classList && e.target.classList.contains('rz');
+      if (!onGrip && e.target.closest && e.target.closest('button, a, input, audio, #ytHost')) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      if (pts.size === 2) { pinchStart(); return; }
+      if (pts.size > 2) { return; }
+      if (onGrip || e.shiftKey) startResize(e); else startDrag(e);
       e.preventDefault();
-    });
-    el.addEventListener('pointermove', e => {
-      if (!start) return;
-      const nx = e.clientX - start.x, ny = e.clientY - start.y;
+    }, { passive: false });
+
+    el.addEventListener('pointermove', function (e) {
+      if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pinch && pts.size >= 2) {
+        const v = Array.from(pts.values());
+        const d = Math.hypot(v[0].x - v[1].x, v[0].y - v[1].y) || 1;
+        sc = clamp(pinch.s0 * d / pinch.d, 0.4, 2.6);
+        apply();
+        return;
+      }
+      if (resize) {
+        const k = ((e.clientX - resize.cx) + (e.clientY - resize.cy)) / (resize.w * 0.9);
+        sc = clamp(resize.s0 * (1 + k), 0.4, 2.6);
+        apply();
+        return;
+      }
+      if (!drag) return;
+      const nx = e.clientX - drag.x, ny = e.clientY - drag.y;
       if (Math.abs(nx - dx) + Math.abs(ny - dy) > 2) window.__drag = true;
       dx = nx; dy = ny; apply();
     });
-    const done = () => {
-      if (!start) return;
-      start = null;
+
+    const save = function () {
+      if (!dx && !dy && sc === 1) { try { localStorage.removeItem(KEY + cfg.id); } catch (e) {} return; }
+      store(KEY + cfg.id, JSON.stringify({ x: Math.round(dx), y: Math.round(dy), s: +sc.toFixed(3) }));
+    };
+    const finish = function () {
+      drag = null; resize = null; pinch = null;
       el.classList.remove('dragging');
-      setTimeout(() => { window.__drag = false; }, 60);
-      try { localStorage.setItem(KEY + id, JSON.stringify({ x: dx, y: dy })); } catch (e) {}
+      el.classList.remove('resizing');
+      setTimeout(function () { window.__drag = false; }, 60);
+      save();
+    };
+    const done = function (e) {
+      if (e && e.pointerId !== undefined) pts.delete(e.pointerId);
+      if (pts.size === 0) { if (drag || resize || pinch) finish(); return; }
+      if (pinch) { pinch = null; save(); }
     };
     el.addEventListener('pointerup', done);
     el.addEventListener('pointercancel', done);
-    el.addEventListener('dblclick', () => {
-      dx = 0; dy = 0; apply();
-      try { localStorage.removeItem(KEY + id); } catch (e) {}
+
+    el.addEventListener('dblclick', function () {
+      dx = 0; dy = 0; sc = 1; apply();
+      try { localStorage.removeItem(KEY + cfg.id); } catch (e) {}
     });
   });
 })();
